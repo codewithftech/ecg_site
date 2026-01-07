@@ -1,136 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Navigation</title>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StrictlyEcig - Premium Vape Wholesale</title>
+  </head>
+  <body>
+    <div id="root"></div>
+ 
+    <script>window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-    </style>
-</head>
-<body class="bg-gray-50 min-h-screen py-12">
-    <div class="container mx-auto px-6">
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-gray-900 mb-4">Page Navigation</h1>
-            <p class="text-gray-600">Click on any button to navigate to the corresponding page</p>
-        </div>
-        
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <a href="home.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-home text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Home</h3>
-            </a>
-            
-            <a href="about.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-info-circle text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">About</h3>
-            </a>
-            
-            <a href="blog.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-blog text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Blog</h3>
-            </a>
-            
-            <a href="brand.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-tag text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Brand</h3>
-            </a>
-            
-            <a href="cart.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-shopping-cart text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Cart</h3>
-            </a>
-            
-            <a href="cart2.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-shopping-bag text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Cart2</h3>
-            </a>
-            
-            <a href="category.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-th-large text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Category</h3>
-            </a>
-            
-            <a href="compare_prodcut.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-balance-scale text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Compare Product</h3>
-            </a>
-            
-            <a href="faq.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-question-circle text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">FAQ</h3>
-            </a>
-            
-            <a href="group_items.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-layer-group text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Group Items</h3>
-            </a>
-            
-            <a href="labreport.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-file-alt text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Lab Report</h3>
-            </a>
-            
-            <a href="live_chat.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-comments text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Live Chat</h3>
-            </a>
-            
-            <a href="login.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-sign-in-alt text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Login</h3>
-            </a>
-            
-            <a href="payment1.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-credit-card text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Payment1</h3>
-            </a>
-            
-            <a href="payment2.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-money-check-alt text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Payment2</h3>
-            </a>
-            
-            <a href="privacy.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-shield-alt text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Privacy</h3>
-            </a>
-            
-            <a href="product.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-box text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Product</h3>
-            </a>
-            
-            <a href="shop.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-store text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Shop</h3>
-            </a>
-            
-            <a href="single_blog.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-newspaper text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Single Blog</h3>
-            </a>
-            
-            <a href="whislist.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-heart text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Wishlist</h3>
-            </a>
-            
-            <a href="contact.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-envelope text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">Contact</h3>
-            </a>
-            
-            <a href="my_account.html" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-2 border-transparent hover:border-blue-500">
-                <i class="fas fa-user-circle text-3xl text-blue-500 mb-3"></i>
-                <h3 class="font-semibold text-gray-900">My Account</h3>
-            </a>
-        </div>
-    </div>
-</body>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
-

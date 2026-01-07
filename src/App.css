@@ -1,0 +1,233 @@
+/* Additional app-specific styles */
+.mega-menu {
+  display: none;
+}
+
+.mega-menu.active {
+  display: block;
+}
+
+/* Group hover for mega menu */
+.group:hover .mega-menu {
+  display: block;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Image optimization */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Link styles */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+/* Button base styles */
+button {
+  cursor: pointer;
+  background: none;
+  font-family: inherit;
+}
+
+button:focus {
+  outline: none;
+}
+
+/* Input base styles */
+input, textarea, select {
+  font-family: inherit;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+}
+
+/* Global select caret (make dropdown arrow inset from the right like design) */
+select:not([multiple]):not([size]) {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M6 8l4 4 4-4' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  background-position: right 18px center;
+  padding-right: 52px;
+}
+
+/* Hide default arrow on old IE/Edge */
+select::-ms-expand {
+  display: none;
+}
+
+/* Ensure proper box-sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Custom scrollbar for webkit browsers (hidden) */
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Ensure Font Awesome icons display properly */
+[class*="fa-"] {
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  line-height: 1;
+}
+
+/* Ensure SVG icons display properly */
+svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Text selection */
+::selection {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+::-moz-selection {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Category tab active state */
+.category-tab.active {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Product Card Group Hover Styles for Brand Page */
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+.group:hover .group-hover\:scale-105 {
+  transform: scale(1.05);
+}
+
+/* Product card overlay styles */
+.product-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.group:hover .product-overlay {
+  opacity: 1;
+}
+
+/* Cart Sidebar Styles */
+.cart-sidebar {
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.cart-sidebar.active {
+  transform: translateX(0);
+}
+
+.cart-overlay {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.cart-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Privacy policy left nav active state (from privacy.html) */
+.sidebar-nav.active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Checkout / payment templates (payment1.html + payment2.html) */
+.error-input {
+  border-color: var(--destructive);
+}
+
+.error-text {
+  color: var(--destructive);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.step-active {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.step-complete {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.payment-method.selected {
+  border-color: var(--primary);
+  background-color: #f0f9ff;
+}
+
+/* Lab report status pills */
+.status-passed {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.status-warning {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.status-failed {
+  color: var(--destructive);
+  background: rgba(186, 18, 18, 0.1);
+}
+
+/* Live chat widget (from live_chat.html) */
+#chat-widget {
+  transition: all 0.3s ease;
+}
+
+#chat-widget.minimized {
+  height: 60px;
+}
+
+#chat-messages {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#chat-messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 10px;
+}
