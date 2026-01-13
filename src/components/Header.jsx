@@ -1,11 +1,94 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const [activeMenu, setActiveMenu] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileSection, setMobileSection] = useState({
+    hardware: false,
+    ejuice: false,
+    disposables: false,
+    pages: false,
+  });
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchWrapRef = useRef(null);
+
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth();
+
+  const searchIndex = useMemo(
+    () => [
+      // Pages
+      { type: 'page', label: 'Home', to: '/' },
+      { type: 'page', label: 'Shop', to: '/shop' },
+      { type: 'page', label: 'Category', to: '/category' },
+      { type: 'page', label: 'Brand', to: '/brand' },
+      { type: 'page', label: 'Cart', to: '/cart' },
+      { type: 'page', label: 'Wishlist', to: '/whislist' },
+      { type: 'page', label: 'My Account', to: '/my_account' },
+      { type: 'page', label: 'Checkout', to: '/checkout' },
+      { type: 'page', label: 'Compare Products', to: '/compare_prodcut' },
+      { type: 'page', label: 'Group Items', to: '/group_items' },
+      { type: 'page', label: 'Live Chat', to: '/live_chat' },
+      { type: 'page', label: 'Lab Report', to: '/labreport' },
+      { type: 'page', label: 'About', to: '/about' },
+      { type: 'page', label: 'Blog', to: '/blog' },
+      { type: 'page', label: 'Contact', to: '/contact' },
+      { type: 'page', label: 'FAQ', to: '/faq' },
+      { type: 'page', label: 'Privacy', to: '/privacy' },
+      { type: 'page', label: 'Login', to: '/login' },
+      { type: 'page', label: 'Register', to: '/register' },
+      { type: 'page', label: 'Reset Password', to: '/reset-password' },
+      { type: 'page', label: 'Create New Password', to: '/reset-password/new' },
+
+      // Products (demo suggestions)
+      { type: 'product', label: 'SMOK Nord 4 Pod System Kit', to: '/product/101' },
+      { type: 'product', label: 'Elf Bar BC5000 Disposable', to: '/product/102' },
+      { type: 'product', label: 'Naked 100 Brain Freeze E-Liquid', to: '/product/103' },
+      { type: 'product', label: 'Uwell Crown 5 Sub-Ohm Tank', to: '/product/104' },
+      { type: 'product', label: 'Vaporesso GTX Coils 5-Pack', to: '/product/105' },
+    ],
+    []
+  );
+
+  const filteredSuggestions = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return searchIndex.slice(0, 8);
+    return searchIndex.filter((x) => x.label.toLowerCase().includes(q)).slice(0, 8);
+  }, [searchIndex, searchQuery]);
+
+  useEffect(() => {
+    if (mobileOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setMobileOpen(false);
+        setSearchOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    const onDocMouseDown = (e) => {
+      const root = searchWrapRef.current;
+      if (!root) return;
+      if (root.contains(e.target)) return;
+      setSearchOpen(false);
+    };
+    document.addEventListener('mousedown', onDocMouseDown);
+    return () => document.removeEventListener('mousedown', onDocMouseDown);
+  }, []);
 
   const handleMouseEnter = (menu) => {
     setActiveMenu(menu);
@@ -21,13 +104,86 @@ const Header = () => {
     window.dispatchEvent(new CustomEvent('cart-toggle'));
   };
 
+  const SearchBox = ({ className = '', inputClassName = '' }) => {
+    return (
+      <div ref={searchWrapRef} className={`relative ${className}`}>
+        <div className="flex bg-muted rounded-full px-4 py-2 items-center">
+          <input
+            type="text"
+            placeholder="Search products..."
+            className={`bg-transparent outline-none text-sm ${inputClassName}`}
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setSearchOpen(true);
+            }}
+            onFocus={() => setSearchOpen(true)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                const target = filteredSuggestions[0];
+                if (target) {
+                  navigate(target.to);
+                } else if (searchQuery.trim()) {
+                  navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+                }
+                setSearchOpen(false);
+                setMobileOpen(false);
+              }
+            }}
+          />
+          <button
+            type="button"
+            className="ml-2"
+            aria-label="Search"
+            onClick={() => {
+              if (searchQuery.trim()) navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+              setSearchOpen(false);
+              setMobileOpen(false);
+            }}
+          >
+            <i className="fas fa-magnifying-glass text-secondary"></i>
+          </button>
+        </div>
+
+        {searchOpen && (
+          <div className="absolute left-0 right-0 top-full mt-2 bg-card border border-border rounded-2xl shadow-lg overflow-hidden z-50">
+            {filteredSuggestions.length > 0 ? (
+              <div className="py-2">
+                {filteredSuggestions.map((s) => (
+                  <button
+                    key={`${s.type}:${s.to}`}
+                    type="button"
+                    onClick={() => {
+                      navigate(s.to);
+                      setSearchOpen(false);
+                      setMobileOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors flex items-center justify-between"
+                  >
+                    <div className="min-w-0">
+                      <div className="text-sm text-foreground truncate">{s.label}</div>
+                      <div className="text-xs text-secondary">{s.type === 'product' ? 'Product' : 'Page'}</div>
+                    </div>
+                    <i className="fas fa-arrow-right text-xs text-secondary flex-shrink-0"></i>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="px-4 py-3 text-sm text-secondary">No results</div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <header id="header" className="bg-card sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center">
             <Link to="/" className="text-2xl font-bold text-primary">
-              StrictlyEcig
+            Ecig
             </Link>
           </div>
           
@@ -229,10 +385,7 @@ const Header = () => {
           </nav>
           
           <div className="flex items-center space-x-4">
-            <div className="hidden md:flex bg-muted rounded-full px-4 py-2 items-center">
-              <input type="text" placeholder="Search products..." className="bg-transparent outline-none text-sm w-48" />
-              <i className="fas fa-magnifying-glass text-secondary"></i>
-            </div>
+            <SearchBox className="hidden lg:block" inputClassName="w-48" />
             
             <Link to="/whislist" className="relative p-2 hover:bg-muted rounded-full transition-colors">
               <i className="far fa-heart text-xl text-foreground"></i>
@@ -267,12 +420,210 @@ const Header = () => {
               </Link>
             )}
             
-            <button className="lg:hidden text-foreground text-2xl">
+            <button
+              type="button"
+              className="lg:hidden text-foreground text-2xl"
+              aria-label="Open menu"
+              onClick={() => setMobileOpen(true)}
+            >
               <i className="fas fa-bars"></i>
             </button>
           </div>
         </div>
       </div>
+
+      {/* Mobile / Tablet Drawer */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-[60] lg:hidden">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} aria-hidden="true" />
+          <div className="absolute inset-y-0 right-0 w-[min(92vw,420px)] bg-card shadow-2xl p-6 overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div className="text-xl font-bold text-primary">Menu</div>
+              <button
+                type="button"
+                className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+                aria-label="Close menu"
+                onClick={() => setMobileOpen(false)}
+              >
+                <i className="fas fa-xmark" />
+              </button>
+            </div>
+
+            {/* Search in drawer */}
+            <SearchBox className="mb-6" inputClassName="w-full" />
+
+            <div className="space-y-2">
+              <Link to="/" onClick={() => setMobileOpen(false)} className="block px-4 py-3 rounded-xl hover:bg-muted">
+                Home
+              </Link>
+              <Link to="/shop" onClick={() => setMobileOpen(false)} className="block px-4 py-3 rounded-xl hover:bg-muted">
+                Shop
+              </Link>
+              <Link to="/brand" onClick={() => setMobileOpen(false)} className="block px-4 py-3 rounded-xl hover:bg-muted">
+                Brands
+              </Link>
+              <Link to="/category" onClick={() => setMobileOpen(false)} className="block px-4 py-3 rounded-xl hover:bg-muted">
+                Categories
+              </Link>
+
+              {/* Collapsible groups */}
+              <button
+                type="button"
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-muted"
+                onClick={() => setMobileSection((p) => ({ ...p, hardware: !p.hardware }))}
+              >
+                <span className="font-medium">Hardware</span>
+                <i className={`fas fa-chevron-${mobileSection.hardware ? 'up' : 'down'} text-xs text-secondary`} />
+              </button>
+              {mobileSection.hardware && (
+                <div className="ml-4 mb-2 space-y-2 text-sm text-secondary">
+                  <Link to="/category" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg hover:bg-muted">
+                    Box Mods
+                  </Link>
+                  <Link to="/category" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg hover:bg-muted">
+                    Pod Systems
+                  </Link>
+                  <Link to="/category" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg hover:bg-muted">
+                    Starter Kits
+                  </Link>
+                </div>
+              )}
+
+              <button
+                type="button"
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-muted"
+                onClick={() => setMobileSection((p) => ({ ...p, ejuice: !p.ejuice }))}
+              >
+                <span className="font-medium">E-Juice</span>
+                <i className={`fas fa-chevron-${mobileSection.ejuice ? 'up' : 'down'} text-xs text-secondary`} />
+              </button>
+              {mobileSection.ejuice && (
+                <div className="ml-4 mb-2 space-y-2 text-sm text-secondary">
+                  <Link to="/category" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg hover:bg-muted">
+                    Fruit
+                  </Link>
+                  <Link to="/category" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg hover:bg-muted">
+                    Dessert
+                  </Link>
+                  <Link to="/category" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg hover:bg-muted">
+                    Menthol
+                  </Link>
+                </div>
+              )}
+
+              <button
+                type="button"
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-muted"
+                onClick={() => setMobileSection((p) => ({ ...p, disposables: !p.disposables }))}
+              >
+                <span className="font-medium">Disposables</span>
+                <i className={`fas fa-chevron-${mobileSection.disposables ? 'up' : 'down'} text-xs text-secondary`} />
+              </button>
+              {mobileSection.disposables && (
+                <div className="ml-4 mb-2 space-y-2 text-sm text-secondary">
+                  <Link to="/category" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg hover:bg-muted">
+                    3000+ Puffs
+                  </Link>
+                  <Link to="/category" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg hover:bg-muted">
+                    5000+ Puffs
+                  </Link>
+                  <Link to="/category" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg hover:bg-muted">
+                    7000+ Puffs
+                  </Link>
+                </div>
+              )}
+
+              <button
+                type="button"
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-muted"
+                onClick={() => setMobileSection((p) => ({ ...p, pages: !p.pages }))}
+              >
+                <span className="font-medium">Pages</span>
+                <i className={`fas fa-chevron-${mobileSection.pages ? 'up' : 'down'} text-xs text-secondary`} />
+              </button>
+              {mobileSection.pages && (
+                <div className="ml-4 mb-2 grid grid-cols-2 gap-2 text-sm text-secondary">
+                  {[
+                    { to: '/about', label: 'About' },
+                    { to: '/blog', label: 'Blog' },
+                    { to: '/single_blog/1', label: 'Single Blog' },
+                    { to: '/contact', label: 'Contact' },
+                    { to: '/faq', label: 'FAQ' },
+                    { to: '/privacy', label: 'Privacy' },
+                    { to: '/labreport', label: 'Lab Report' },
+                    { to: '/compare_prodcut', label: 'Compare' },
+                    { to: '/group_items', label: 'Group Items' },
+                    { to: '/checkout', label: 'Checkout' },
+                    { to: '/my_account', label: 'My Account' },
+                    { to: '/register', label: 'Register' },
+                  ].map((p) => (
+                    <Link
+                      key={p.to}
+                      to={p.to}
+                      onClick={() => setMobileOpen(false)}
+                      className="px-3 py-2 rounded-lg hover:bg-muted"
+                    >
+                      {p.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6 border-t border-border pt-6 space-y-3">
+              <button
+                type="button"
+                onClick={(e) => {
+                  // open cart sidebar then close menu
+                  handleCartClick(e);
+                  setMobileOpen(false);
+                }}
+                className="w-full bg-muted px-4 py-3 rounded-xl flex items-center justify-between hover:bg-secondary hover:text-white transition-colors"
+              >
+                <span className="font-medium">
+                  <i className="fas fa-cart-shopping mr-2" /> Cart
+                </span>
+                <span className="text-xs bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center">
+                  3
+                </span>
+              </button>
+
+              <Link
+                to="/whislist"
+                onClick={() => setMobileOpen(false)}
+                className="w-full bg-muted px-4 py-3 rounded-xl flex items-center justify-between hover:bg-secondary hover:text-white transition-colors"
+              >
+                <span className="font-medium">
+                  <i className="far fa-heart mr-2" /> Wishlist
+                </span>
+                <span className="text-xs bg-accent text-white w-6 h-6 rounded-full flex items-center justify-center">3</span>
+              </Link>
+
+              {isAuthenticated ? (
+                <button
+                  type="button"
+                  className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-medium hover:opacity-90 transition-opacity"
+                  onClick={() => {
+                    logout();
+                    setMobileOpen(false);
+                    navigate('/login', { replace: true });
+                  }}
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="block w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-medium text-center hover:opacity-90 transition-opacity"
+                >
+                  Login
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

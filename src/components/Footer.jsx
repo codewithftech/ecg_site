@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <footer id="footer" className="bg-foreground text-white py-12">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
           <div>
             <h4 className="font-bold text-lg mb-4">Promotions</h4>
@@ -47,10 +47,10 @@ const Footer = () => {
             <h4 className="font-bold text-lg mb-4">Contact Us</h4>
             <ul className="space-y-2 text-white/80">
               <li><i className="fas fa-phone mr-2"></i> 1-800-VAPE-123</li>
-              <li><i className="fas fa-envelope mr-2"></i> info@strictlyecig.com</li>
+              <li className="break-words"><i className="fas fa-envelope mr-2"></i> info@strictlyecig.com</li>
               <li><i className="fas fa-location-dot mr-2"></i> 123 Vape Street, NY</li>
             </ul>
-            <div className="flex space-x-3 mt-4">
+            <div className="flex flex-wrap gap-3 mt-4">
               <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-primary transition-colors">
                 <i className="fab fa-facebook"></i>
               </a>
@@ -65,12 +65,18 @@ const Footer = () => {
         </div>
         
         <div className="border-t border-white/20 pt-8">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="mb-4 md:mb-0">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="w-full md:w-auto">
               <h4 className="font-bold mb-2">Subscribe to Our Newsletter</h4>
-              <div className="flex">
-                <input type="email" placeholder="Enter your email" className="bg-white/10 border border-white/20 rounded-l-full px-4 py-2 outline-none text-white placeholder-white/50 w-64" />
-                <button className="bg-primary text-primary-foreground px-6 py-2 rounded-r-full font-semibold hover:opacity-90 transition-opacity">Subscribe</button>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 w-full">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="bg-white/10 border border-white/20 rounded-full sm:rounded-l-full sm:rounded-r-none px-4 py-2 outline-none text-white placeholder-white/50 w-full sm:w-72"
+                />
+                <button className="bg-primary text-primary-foreground px-6 py-2 rounded-full sm:rounded-r-full sm:rounded-l-none font-semibold hover:opacity-90 transition-opacity w-full sm:w-auto">
+                  Subscribe
+                </button>
               </div>
             </div>
             <div className="text-white/60 text-sm text-center md:text-right">

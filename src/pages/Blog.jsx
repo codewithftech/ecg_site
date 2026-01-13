@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import BlogHeader from '../components/blog/BlogHeader';
+import CategoryFilters from '../components/blog/CategoryFilters';
+import BlogGrid from '../components/blog/BlogGrid';
+import BlogPagination from '../components/blog/BlogPagination';
+import BlogSidebar from '../components/blog/BlogSidebar';
 
 const Blog = () => {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -123,222 +127,16 @@ const Blog = () => {
 
   return (
     <main className="container mx-auto px-6 py-12">
-      {/* Blog Header Section */}
-      <section id="blog-header" className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-foreground mb-4">Our Blog & Industry Insights</h1>
-        <p className="text-secondary text-lg mb-8">Stay updated with the latest news, regulations, and trends in the vaping industry</p>
-        
-        <div className="max-w-2xl mx-auto">
-          <div className="flex bg-card rounded-full px-6 py-3 shadow-sm border border-border">
-            <input 
-              type="text" 
-              placeholder="Search articles..." 
-              className="flex-1 bg-transparent outline-none text-foreground"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button className="text-primary hover:text-accent transition-colors">
-              <i className="fas fa-magnifying-glass text-xl"></i>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Category Filters Section */}
-      <section id="category-filters" className="mb-12">
-        <div className="flex flex-wrap justify-center gap-3">
-          <button 
-            className={`category-tab px-6 py-2 rounded-full font-medium transition-all ${
-              activeCategory === 'all' 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-card hover:bg-primary hover:text-white'
-            }`}
-            onClick={() => filterCategory('all')}
-          >
-            All Posts
-          </button>
-          <button 
-            className={`category-tab px-6 py-2 rounded-full font-medium transition-all ${
-              activeCategory === 'news' 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-card hover:bg-primary hover:text-white'
-            }`}
-            onClick={() => filterCategory('news')}
-          >
-            News
-          </button>
-          <button 
-            className={`category-tab px-6 py-2 rounded-full font-medium transition-all ${
-              activeCategory === 'regulations' 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-card hover:bg-primary hover:text-white'
-            }`}
-            onClick={() => filterCategory('regulations')}
-          >
-            Regulations
-          </button>
-          <button 
-            className={`category-tab px-6 py-2 rounded-full font-medium transition-all ${
-              activeCategory === 'products' 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-card hover:bg-primary hover:text-white'
-            }`}
-            onClick={() => filterCategory('products')}
-          >
-            Products
-          </button>
-          <button 
-            className={`category-tab px-6 py-2 rounded-full font-medium transition-all ${
-              activeCategory === 'business' 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-card hover:bg-primary hover:text-white'
-            }`}
-            onClick={() => filterCategory('business')}
-          >
-            Business Tips
-          </button>
-          <button 
-            className={`category-tab px-6 py-2 rounded-full font-medium transition-all ${
-              activeCategory === 'trends' 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-card hover:bg-primary hover:text-white'
-            }`}
-            onClick={() => filterCategory('trends')}
-          >
-            Industry Trends
-          </button>
-        </div>
-      </section>
+      <BlogHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <CategoryFilters activeCategory={activeCategory} onChange={filterCategory} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Blog Grid */}
-        <div id="blog-grid" className="lg:col-span-2">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredPosts.map((post) => (
-              <article key={post.id} className="bg-card rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all group">
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                    src={post.image} 
-                    alt={post.title}
-                  />
-                </div>
-                <div className="p-6">
-                  <span className={`inline-block ${post.categoryColor} px-3 py-1 rounded-full text-xs font-semibold mb-3`}>
-                    {post.categoryLabel}
-                  </span>
-                  <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
-                    {post.title}
-                  </h3>
-                  <p className="text-secondary text-sm mb-4 line-clamp-3">{post.excerpt}</p>
-                  <div className="flex items-center justify-between text-xs text-secondary mb-4">
-                    <div className="flex items-center space-x-4">
-                      <span>
-                        <i className="fas fa-user mr-1"></i>
-                        {post.author}
-                      </span>
-                      <span>
-                        <i className="fas fa-calendar mr-1"></i>
-                        {post.date}
-                      </span>
-                    </div>
-                    <span>
-                      <i className="fas fa-clock mr-1"></i>
-                      {post.readTime}
-                    </span>
-                  </div>
-                  <Link 
-                    to={`/single_blog/${post.id}`}
-                    className="w-full bg-primary text-primary-foreground py-2 rounded-full font-medium hover:opacity-90 transition-opacity block text-center"
-                  >
-                    Read More
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          {/* Pagination */}
-          <div id="pagination" className="mt-12 flex justify-center items-center space-x-2">
-            <button className="w-10 h-10 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all">
-              <i className="fas fa-chevron-left"></i>
-            </button>
-            <button className="w-10 h-10 rounded-full bg-primary text-white">1</button>
-            <button className="w-10 h-10 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all">2</button>
-            <button className="w-10 h-10 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all">3</button>
-            <button className="w-10 h-10 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all">4</button>
-            <button className="w-10 h-10 rounded-full border border-border hover:bg-primary hover:text-white hover:border-primary transition-all">
-              <i className="fas fa-chevron-right"></i>
-            </button>
-          </div>
+        <div className="lg:col-span-2">
+          <BlogGrid posts={filteredPosts} />
+          <BlogPagination />
         </div>
 
-        {/* Blog Sidebar */}
-        <aside id="blog-sidebar" className="lg:col-span-1">
-          {/* Popular Posts */}
-          <div className="bg-card rounded-xl p-6 shadow-sm mb-6">
-            <h3 className="text-lg font-bold text-foreground mb-4">Popular Posts</h3>
-            <div className="space-y-4">
-              {popularPosts.map((post) => (
-                <Link key={post.id} to={`/single_blog/${post.id}`} className="flex space-x-3 group">
-                  <div className="w-20 h-20 overflow-hidden rounded-lg flex-shrink-0">
-                    <img className="w-full h-full object-cover" src={post.image} alt={post.title} />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
-                      {post.title}
-                    </h4>
-                    <span className="text-xs text-secondary">{post.date}</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Categories */}
-          <div className="bg-card rounded-xl p-6 shadow-sm mb-6">
-            <h3 className="text-lg font-bold text-foreground mb-4">Categories</h3>
-            <div className="space-y-2">
-              {categories.map((category) => (
-                <Link 
-                  key={category.name}
-                  to="#" 
-                  className="flex justify-between items-center py-2 text-secondary hover:text-primary transition-colors"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const categoryMap = {
-                      'News': 'news',
-                      'Regulations': 'regulations',
-                      'Products': 'products',
-                      'Business Tips': 'business',
-                      'Industry Trends': 'trends',
-                    };
-                    filterCategory(categoryMap[category.name] || 'all');
-                  }}
-                >
-                  <span>{category.name}</span>
-                  <span className="bg-muted px-2 py-1 rounded-full text-xs">{category.count}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Newsletter Subscription */}
-          <div className="bg-gradient-to-br from-primary to-accent rounded-xl p-6 shadow-sm text-white">
-            <h3 className="text-lg font-bold mb-2">Stay Updated</h3>
-            <p className="text-sm mb-4 opacity-90">Subscribe to our newsletter for exclusive B2B insights</p>
-            <div className="flex flex-col space-y-2">
-              <input 
-                type="email" 
-                placeholder="Your email address" 
-                className="px-4 py-3 rounded-full outline-none text-foreground"
-              />
-              <button className="bg-white text-primary py-3 rounded-full font-semibold hover:bg-opacity-90 transition-opacity">
-                Subscribe Now
-              </button>
-            </div>
-          </div>
-        </aside>
+        <BlogSidebar popularPosts={popularPosts} categories={categories} onSelectCategory={filterCategory} />
       </div>
     </main>
   );

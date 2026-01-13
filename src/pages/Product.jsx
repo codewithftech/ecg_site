@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import ProductCard from '../components/ProductCard';
+import ProductGallery from '../components/product/ProductGallery';
+import BundleContents from '../components/product/BundleContents';
+import ProductDetailsTabs from '../components/product/ProductDetailsTabs';
+import RelatedProductsCarousel from '../components/product/RelatedProductsCarousel';
 
 const UNIT_PRICE = 45.99;
 const TAX_RATE = 0.13;
@@ -141,8 +143,7 @@ const Product = ({ productId, embedded = false }) => {
     setReviewForm({ name: '', rating: 5, text: '' });
     setReviewErrors({});
   };
-  const relatedSwiperRef = useRef(null);
-  const [activeRelated, setActiveRelated] = useState(0);
+  // related carousel state is inside component now
   const groups = useMemo(
     () => [
       {
@@ -288,31 +289,8 @@ const Product = ({ productId, embedded = false }) => {
         / <span className="text-foreground font-medium">SMOK Nord 5 Kit</span>
       </nav>
 
-      <div className="flex  flex-row gap-12 mb-12">
-        <div id="product-gallery" className="space-y-4 lg:basis-2/5 lg:max-w-[40%]">
-          <div className="w-full h-96 overflow-hidden rounded-xl shadow-lg">
-            <img id="main-image" className="w-full h-full object-cover" src={mainImage} alt="SMOK Nord 5 Kit main" />
-          </div>
-
-          <div className="grid grid-cols-4 gap-3">
-            {images.map((src, idx) => {
-              const active = src === mainImage;
-              return (
-                <button
-                  key={src}
-                  type="button"
-                  className={`h-20 overflow-hidden rounded-lg cursor-pointer border-2 transition-colors ${
-                    active ? 'border-primary' : 'border-border hover:border-primary'
-                  }`}
-                  onClick={() => setMainImage(src)}
-                  aria-label={`Select image ${idx + 1}`}
-                >
-                  <img className="w-full h-full object-cover" src={src} alt={`SMOK Nord 5 view ${idx + 1}`} />
-                </button>
-              );
-            })}
-          </div>
-        </div>
+      <div className="flex flex-col lg:flex-row gap-12 mb-12">
+        <ProductGallery images={images} mainImage={mainImage} setMainImage={setMainImage} />
 
         <div id="product-info" className="space-y-6 lg:basis-3/5 lg:max-w-[60%]">
           <div>
@@ -417,96 +395,17 @@ const Product = ({ productId, embedded = false }) => {
               </div>
             </div> */}
 
-            <div className="bg-card rounded-xl shadow-sm p-8">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Bundle Contents</h2>
-
-          {groups.map((group) => (
-            <div key={group.id} id={`${group.id}-edition`} className="mb-10">
-              <div className={`flex items-center justify-between mb-4 pb-3 border-b-2 ${group.borderClass}`}>
-                <h3 className="text-xl font-semibold text-foreground">{group.title}</h3>
-                <span className="text-sm text-secondary">{group.countLabel}</span>
-              </div>
-
-              <div className="space-y-4">
-                {group.items.map((item) => {
-                  const qty = qtyById[item.id] ?? 0;
-                  const subtotal = subtotalFor(item.id);
-                  const tax = taxFor(item.id);
-
-                  return (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex items-center space-x-4 flex-1">
-                        <div className="w-20 h-20 overflow-hidden rounded-lg">
-                          <img className="w-full h-full object-cover" src={item.image} alt={item.name} />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-foreground">{item.name}</h4>
-                          <p className="text-sm text-secondary">{item.desc}</p>
-                          <div className="flex items-center space-x-2 mt-1">
-                            <span className={`text-xs ${group.tagClass} px-2 py-1 rounded`}>{item.tag}</span>
-                            <span className="text-xs text-secondary">SKU: {item.sku}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-6">
-                        <div className="text-right">
-                          <p className="text-sm text-secondary mb-1">Unit Price</p>
-                          <p className="text-lg font-bold text-foreground">${UNIT_PRICE.toFixed(2)}</p>
-                        </div>
-
-                        <div className="flex items-center border border-border rounded-lg">
-                          <button className="px-3 py-2 hover:bg-muted rounded-l-lg" onClick={() => updateBundleQuantity(item.id, -1)}>
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            value={qty}
-                            min="0"
-                            onChange={(e) => setBundleQuantity(item.id, Number(e.target.value))}
-                            className="w-16 text-center border-l border-r border-border outline-none"
-                          />
-                          <button className="px-3 py-2 hover:bg-muted rounded-r-lg" onClick={() => updateBundleQuantity(item.id, 1)}>
-                            +
-                          </button>
-                        </div>
-
-                        <div className="text-right w-32">
-                          <p className="text-sm text-secondary mb-1">Subtotal</p>
-                          <p className="text-lg font-bold text-foreground">${subtotal.toFixed(2)}</p>
-                          {qty > 0 && <p className="text-xs text-accent">Tax: ${tax.toFixed(2)}</p>}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-
-          <div className="flex items-center justify-between p-6 bg-primary/5 rounded-xl border-2 border-primary">
-            <div>
-              <h3 className="text-xl font-bold text-foreground mb-1">Bundle Total</h3>
-              <p className="text-sm text-secondary">Tax calculated at checkout</p>
-            </div>
-            <div className="text-right">
-              <p className="text-3xl font-bold text-primary">${bundleTotal.toFixed(2)}</p>
-              <p className="text-sm text-accent mt-1">Total Tax: ${bundleTax.toFixed(2)}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-4 mt-6">
-            <button className="flex-1 bg-primary text-primary-foreground px-8 py-4  rounded-full font-semibold hover:opacity-90 transition-opacity">
-              <i className="fas fa-cart-shopping mr-2"></i>Add Bundle to Cart
-            </button>
-            <button className="px-6 py-4 border-2 border-border  rounded-full hover:border-primary transition-colors">
-              <i className="far fa-heart text-xl"></i>
-            </button>
-          </div>
-        </div>
+            <BundleContents
+              groups={groups}
+              qtyById={qtyById}
+              subtotalFor={subtotalFor}
+              taxFor={taxFor}
+              updateBundleQuantity={updateBundleQuantity}
+              setBundleQuantity={setBundleQuantity}
+              unitPrice={UNIT_PRICE}
+              bundleTotal={bundleTotal}
+              bundleTax={bundleTax}
+            />
           </div>
 
           <div className="bg-muted/30 p-6 rounded-xl text-center">
@@ -551,302 +450,21 @@ const Product = ({ productId, embedded = false }) => {
         </div>
       </div>
 
-      <section id="product-details" className="mb-12">
-        <div className="bg-card rounded-xl border border-border overflow-hidden">
-          {/* Tabs */}
-          <div className="flex items-center gap-10 px-6 pt-4 border-b border-border">
-            {[
-              { key: 'description', label: 'Description' },
-              { key: 'specs', label: 'Specifications' },
-              { key: 'reviews', label: `Reviews (${reviewsCount})` },
-              { key: 'shipping', label: 'Shipping & Returns' },
-            ].map((t) => (
-              <button
-                key={t.key}
-                type="button"
-                onClick={() => setActiveDetailsTab(t.key)}
-                className={`pb-4 text-sm font-semibold transition-colors ${
-                  activeDetailsTab === t.key ? 'text-foreground border-b-2 border-primary' : 'text-secondary hover:text-foreground'
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
+      <ProductDetailsTabs
+        activeTab={activeDetailsTab}
+        setActiveTab={setActiveDetailsTab}
+        reviewsCount={reviewsCount}
+        isWriteReviewOpen={isWriteReviewOpen}
+        setIsWriteReviewOpen={setIsWriteReviewOpen}
+        reviewForm={reviewForm}
+        setReviewForm={setReviewForm}
+        reviewErrors={reviewErrors}
+        setReviewErrors={setReviewErrors}
+        onSubmitReview={handleSubmitReview}
+        allReviews={allReviews}
+      />
 
-          {/* Content */}
-          <div className="p-6">
-            {activeDetailsTab === 'description' && (
-              <div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">Product Description</h3>
-                <p className="text-secondary leading-relaxed mb-4">
-                  The SMOK Nord 5 Kit represents the latest evolution in pod mod technology, featuring an impressive 80W
-                  output and compatibility with RPM3 coils. This device combines the portability of a pod system with the
-                  power and customization options of a traditional box mod.
-                </p>
-                <p className="text-secondary leading-relaxed mb-8">
-                  Designed for both MTL and DTL vaping styles, the Nord 5 offers adjustable airflow and multiple coil
-                  options to suit any vaping preference. The large 2000mAh battery ensures all-day vaping, while the Type-C
-                  charging port provides fast and convenient charging.
-                </p>
-
-                <h4 className="text-xl font-bold text-foreground mb-4">Key Features:</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {[
-                    { title: 'Advanced Coil Technology', desc: 'Enhanced flavor and vapor production' },
-                    { title: 'Smart Battery Management', desc: 'Optimized power delivery and longevity' },
-                    { title: 'Adjustable Airflow', desc: 'Customizable vaping experience' },
-                    { title: 'Premium Build Quality', desc: 'Durable zinc alloy construction' },
-                  ].map((f) => (
-                    <div key={f.title} className="flex gap-3">
-                      <span className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white flex-shrink-0 mt-0.5">
-                        <i className="fas fa-check text-xs"></i>
-                      </span>
-                      <div>
-                        <div className="font-semibold text-foreground">{f.title}</div>
-                        <div className="text-sm text-secondary">{f.desc}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeDetailsTab === 'specs' && (
-              <div>
-                <h3 className="text-2xl font-bold text-foreground mb-6">Specifications</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-3">Device Specs</h4>
-                    <ul className="space-y-2 text-sm text-secondary">
-                      <li>Output Power: 5-80W</li>
-                      <li>Battery: 2000mAh</li>
-                      <li>Charging: Type-C</li>
-                      <li>Material: Zinc Alloy</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-3">Pod Specs</h4>
-                    <ul className="space-y-2 text-sm text-secondary">
-                      <li>Capacity: 5ml</li>
-                      <li>Coil: RPM3 Series</li>
-                      <li>Filling: Side Fill</li>
-                      <li>Airflow: Adjustable</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            )}
-
-              {activeDetailsTab === 'reviews' && (
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-bold text-foreground">Reviews</h3>
-                  <button
-                    type="button"
-                    onClick={() => setIsWriteReviewOpen((v) => !v)}
-                    className="bg-primary text-primary-foreground px-6 py-3 rounded-full font-semibold hover:opacity-90"
-                  >
-                    Write a Review
-                  </button>
-                </div>
-
-                {isWriteReviewOpen && (
-                  <form onSubmit={handleSubmitReview} className="border border-border rounded-xl p-5 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">Name</label>
-                        <input
-                          value={reviewForm.name}
-                          onChange={(e) => setReviewForm((s) => ({ ...s, name: e.target.value }))}
-                          className={`w-full px-4 py-3 rounded-xl border bg-card outline-none focus:ring-2 focus:ring-primary ${
-                            reviewErrors.name ? 'border-destructive' : 'border-border'
-                          }`}
-                          placeholder="Your name"
-                        />
-                        {reviewErrors.name && <p className="text-sm text-destructive mt-1">{reviewErrors.name}</p>}
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">Rating</label>
-                        <div className="flex items-center gap-2">
-                          {Array.from({ length: 5 }).map((_, i) => {
-                            const star = i + 1;
-                            const active = star <= Number(reviewForm.rating || 0);
-                            return (
-                              <button
-                                key={`rate-${star}`}
-                                type="button"
-                                onClick={() => setReviewForm((s) => ({ ...s, rating: star }))}
-                                className="p-1"
-                                aria-label={`Rate ${star} star`}
-                              >
-                                <i className={`fas fa-star text-lg ${active ? 'text-accent' : 'text-border'}`} />
-                              </button>
-                            );
-                          })}
-                        </div>
-                        {reviewErrors.rating && <p className="text-sm text-destructive mt-1">{reviewErrors.rating}</p>}
-                      </div>
-                    </div>
-
-                    <div className="mt-4">
-                      <label className="block text-sm font-medium text-foreground mb-2">Review</label>
-                      <textarea
-                        rows={4}
-                        value={reviewForm.text}
-                        onChange={(e) => setReviewForm((s) => ({ ...s, text: e.target.value }))}
-                        className={`w-full px-4 py-3 rounded-xl border bg-card outline-none focus:ring-2 focus:ring-primary ${
-                          reviewErrors.text ? 'border-destructive' : 'border-border'
-                        }`}
-                        placeholder="Write your review..."
-                      />
-                      {reviewErrors.text && <p className="text-sm text-destructive mt-1">{reviewErrors.text}</p>}
-                    </div>
-
-                    <div className="flex items-center justify-end gap-3 mt-5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsWriteReviewOpen(false);
-                          setReviewErrors({});
-                        }}
-                        className="px-6 py-3 rounded-full border border-border font-semibold hover:bg-muted transition-colors"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-6 py-3 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90"
-                      >
-                        Submit Review
-                      </button>
-                    </div>
-                  </form>
-                )}
-
-                <div className="space-y-6">
-                  {allReviews.map((r) => (
-                    <div key={r.id} className="border border-border rounded-xl p-5">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="font-semibold text-foreground">{r.name}</div>
-                        <div className="text-xs text-secondary">{r.date}</div>
-                      </div>
-                      <div className="flex items-center gap-1 mb-3">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <i
-                            key={`${r.id}-star-${i}`}
-                            className={`fas fa-star text-sm ${i < r.rating ? 'text-accent' : 'text-border'}`}
-                            aria-hidden="true"
-                          />
-                        ))}
-                      </div>
-                      <p className="text-secondary leading-relaxed">{r.text}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeDetailsTab === 'shipping' && (
-              <div>
-                <h3 className="text-2xl font-bold text-foreground mb-6">Shipping & Returns</h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="bg-muted/30 rounded-xl p-6">
-                    <h4 className="font-semibold text-foreground mb-3">Shipping</h4>
-                    <ul className="space-y-2 text-sm text-secondary">
-                      <li>Orders ship within 1–2 business days (verified accounts).</li>
-                      <li>Tracking provided via email once dispatched.</li>
-                      <li>Free shipping may apply on qualified wholesale orders.</li>
-                    </ul>
-                  </div>
-                  <div className="bg-muted/30 rounded-xl p-6">
-                    <h4 className="font-semibold text-foreground mb-3">Returns</h4>
-                    <ul className="space-y-2 text-sm text-secondary">
-                      <li>Returns accepted within 7 days for unopened items.</li>
-                      <li>Defective items may be eligible for replacement.</li>
-                      <li>Contact support with your order number to start a return.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="mt-8 bg-destructive/10 border border-destructive/20 rounded-xl p-6">
-                  <h4 className="text-lg font-bold text-destructive mb-3">
-                    <i className="fas fa-triangle-exclamation mr-2"></i>
-                    Compliance Warning
-                  </h4>
-                  <ul className="space-y-2 text-sm text-destructive">
-                    <li>• This product contains nicotine</li>
-                    <li>• Not for sale to minors</li>
-                    <li>• Keep away from children and pets</li>
-                    <li>• For adult use only (21+)</li>
-                    <li>• Not for pregnant or nursing women</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section id="related-products" className="mb-12">
-        <h2 className="text-2xl font-bold text-foreground mb-6">Related Products</h2>
-
-        <div className="relative">
-          <Swiper
-            onSwiper={(s) => {
-              relatedSwiperRef.current = s;
-              setActiveRelated(s.realIndex ?? 0);
-            }}
-            onSlideChange={(s) => setActiveRelated(s.realIndex ?? 0)}
-            slidesPerView={1.15}
-            spaceBetween={16}
-            breakpoints={{
-              640: { slidesPerView: 2.1, spaceBetween: 20 },
-              768: { slidesPerView: 2.6, spaceBetween: 24 },
-              1024: { slidesPerView: 4, spaceBetween: 24 },
-            }}
-            className="py-2"
-          >
-            {relatedProducts.map((rp) => (
-              <SwiperSlide key={rp.id}>
-                <ProductCard product={rp} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-
-          <button
-            type="button"
-            aria-label="Previous related products"
-            onClick={() => relatedSwiperRef.current?.slidePrev()}
-            className="absolute -left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-white transition-colors z-10"
-          >
-            <i className="fas fa-chevron-left"></i>
-          </button>
-          <button
-            type="button"
-            aria-label="Next related products"
-            onClick={() => relatedSwiperRef.current?.slideNext()}
-            className="absolute -right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-white transition-colors z-10"
-          >
-            <i className="fas fa-chevron-right"></i>
-          </button>
-        </div>
-
-        {/* Pagination dots (same style as Home Hot Items, active = primary) */}
-        <div className="flex justify-center gap-2 mt-6">
-          {relatedProducts.map((p, idx) => (
-            <button
-              key={`related-dot-${p.id}-${idx}`}
-              type="button"
-              aria-label={`Go to related product ${idx + 1}`}
-              onClick={() => relatedSwiperRef.current?.slideToLoop(idx)}
-              className={`w-3 h-3 rounded-full ${idx === activeRelated ? 'bg-primary' : 'bg-border'}`}
-            />
-          ))}
-        </div>
-      </section>
+      <RelatedProductsCarousel products={relatedProducts} />
 
       {!embedded && <div className="text-xs text-secondary">Product ID: {id}</div>}
     </main>

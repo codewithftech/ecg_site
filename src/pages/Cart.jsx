@@ -1,7 +1,11 @@
-import { useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import ProductCard from '../components/ProductCard';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { useState } from 'react';
+import CartHeader from '../components/cart/CartHeader';
+import CartFiltersRow from '../components/cart/CartFiltersRow';
+import CartItemsList from '../components/cart/CartItemsList';
+import CartActionsRow from '../components/cart/CartActionsRow';
+import OrderSummaryCard from '../components/cart/OrderSummaryCard';
+import OrderNotesCard from '../components/cart/OrderNotesCard';
+import RecommendedCarousel from '../components/cart/RecommendedCarousel';
 
 const Cart = () => {
   const [filterFlags, setFilterFlags] = useState({
@@ -12,8 +16,6 @@ const Cart = () => {
   });
   const [discountCode, setDiscountCode] = useState('');
   const [orderNotes, setOrderNotes] = useState('');
-  const [activeRecommended, setActiveRecommended] = useState(0);
-  const recommendedSwiperRef = useRef(null);
 
   const [cartItems, setCartItems] = useState([
     {
@@ -118,243 +120,37 @@ const Cart = () => {
 
   return (
     <main className="container mx-auto px-6 py-8">
-      <nav id="breadcrumb" className="text-sm text-secondary mb-6 mt-6">
-        <Link to="/" className="hover:text-primary">Home</Link> /{' '}
-        <Link to="/shop" className="hover:text-primary">Shop</Link> /{' '}
-        <span className="text-foreground font-medium">Shopping Cart</span>
-      </nav>
-
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-bold text-foreground">Shopping Cart</h1>
-        <span className="text-secondary">{cartItems.length} items</span>
-      </div>
+      <CartHeader itemCount={cartItems.length} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left */}
         <section className="lg:col-span-2">
-          {/* Filters row */}
-          <div className="bg-card border border-border rounded-2xl p-4 mb-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { key: 'allProducts', label: 'All Products' },
-                { key: 'similarCategories', label: 'Similar Categories' },
-                { key: 'promotionsOnly', label: 'Promotions Only' },
-                { key: 'freeShipping', label: 'Free Shippings' },
-              ].map((f) => (
-                <label key={f.key} className="flex items-center gap-3 text-sm text-secondary">
-                  <input
-                    type="checkbox"
-                    checked={!!filterFlags[f.key]}
-                    onChange={(e) => setFilterFlags((s) => ({ ...s, [f.key]: e.target.checked }))}
-                    className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
-                  />
-                  {f.label}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Items */}
-          <div className="space-y-6">
-            {cartItems.map((item) => (
-              <div key={item.id} className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-                <div className="flex items-center gap-6">
-                  <div className="w-20 h-20 overflow-hidden rounded-xl bg-muted">
-                    <img className="w-full h-full object-cover" src={item.image} alt={item.name} />
-                  </div>
-
-                  <div className="flex-1">
-                    <div className="font-bold text-foreground">{item.name}</div>
-                    <div className="text-sm text-secondary">{item.description}</div>
-                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-2 text-xs text-secondary">
-                      {item.attributes.map((attr) => (
-                        <span key={`${item.id}-${attr.label}`}>
-                          {attr.label}: {attr.value}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-6">
-                    <div className="flex items-center border border-border rounded-xl overflow-hidden bg-white">
-                      <button
-                        type="button"
-                        className="px-4 py-2 hover:bg-muted transition-colors"
-                        onClick={() => updateQuantity(item.id, -1)}
-                        aria-label="Decrease quantity"
-                      >
-                        -
-                      </button>
-                      <div className="px-5 py-2 border-l border-r border-border min-w-[48px] text-center font-semibold">
-                        {item.quantity}
-                      </div>
-                      <button
-                        type="button"
-                        className="px-4 py-2 hover:bg-muted transition-colors"
-                        onClick={() => updateQuantity(item.id, 1)}
-                        aria-label="Increase quantity"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    <div className="text-right min-w-[110px]">
-                      <div className="text-2xl font-bold text-foreground">${(item.linePrice ?? 0).toFixed(2)}</div>
-                      <div className="text-xs text-secondary">{item.eachLabel}</div>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="p-2 text-destructive hover:bg-destructive/10 rounded-full transition-colors"
-                      onClick={() => removeItem(item.id)}
-                      aria-label="Remove item"
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex items-center justify-between mt-6">
-            <Link to="/shop" className="text-primary font-medium hover:underline flex items-center gap-2">
-              <i className="fas fa-arrow-left"></i> Continue Shopping
-            </Link>
-            <button type="button" className="text-destructive font-medium hover:underline flex items-center gap-2">
-              <i className="fas fa-trash"></i> Clear Cart
-            </button>
-          </div>
+          <CartFiltersRow filterFlags={filterFlags} setFilterFlags={setFilterFlags} />
+          <CartItemsList
+            items={cartItems}
+            onDecreaseQty={(id) => updateQuantity(id, -1)}
+            onIncreaseQty={(id) => updateQuantity(id, 1)}
+            onRemove={removeItem}
+          />
+          <CartActionsRow onClear={() => window.alert('Clear cart (demo)')} />
         </section>
 
         {/* Right */}
         <aside className="space-y-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1">
-          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-            <h3 className="text-xl font-bold text-foreground mb-6">Order Summary</h3>
-
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between text-secondary">
-                <span>Subtotal ({totalItems} items)</span>
-                <span className="text-foreground font-medium">${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-secondary">
-                <span>Shipping</span>
-                <span className="text-foreground font-medium">${shipping.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-secondary">
-                <span>Tax</span>
-                <span className="text-foreground font-medium">${tax.toFixed(2)}</span>
-              </div>
-              <hr className="border-border" />
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-foreground">Total</span>
-                <span className="text-xl font-bold text-foreground">${total.toFixed(2)}</span>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <div className="text-sm font-semibold text-foreground mb-3">Discount Code</div>
-              <div className="flex items-center gap-3">
-                <input
-                  value={discountCode}
-                  onChange={(e) => setDiscountCode(e.target.value)}
-                  placeholder="Enter code"
-                  className="flex-1 px-4 py-3 rounded-full border border-border bg-background outline-none"
-                />
-                <button
-                  type="button"
-                  className="px-6 py-3 rounded-full bg-muted text-foreground font-semibold shadow hover:bg-muted/70 transition-colors"
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-
-            <Link
-              to="/checkout"
-              className="mt-8 w-full bg-primary text-primary-foreground py-4 rounded-full font-bold hover:opacity-90 transition-opacity flex items-center justify-center"
-            >
-              Proceed to Checkout
-            </Link>
-
-            <div className="mt-6 text-center">
-              <p className="text-xs text-secondary mb-3">Secure Checkout</p>
-              <div className="flex justify-center gap-4 text-secondary">
-                <i className="fas fa-shield-halved"></i>
-                <i className="fas fa-lock"></i>
-                <i className="fas fa-credit-card"></i>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-            <h3 className="text-xl font-bold text-foreground mb-4">Order Notes</h3>
-            <textarea
-              value={orderNotes}
-              onChange={(e) => setOrderNotes(e.target.value)}
-              placeholder="Special instructions or requests..."
-              className="w-full min-h-[140px] rounded-2xl border border-border bg-background p-4 outline-none"
-            />
-          </div>
+          <OrderSummaryCard
+            totalItems={totalItems}
+            subtotal={subtotal}
+            shipping={shipping}
+            tax={tax}
+            total={total}
+            discountCode={discountCode}
+            setDiscountCode={setDiscountCode}
+          />
+          <OrderNotesCard orderNotes={orderNotes} setOrderNotes={setOrderNotes} />
         </aside>
       </div>
 
-      <section id="recommended-products" className="mt-16">
-        <h2 className="text-2xl font-bold text-foreground mb-6">Recommended Products</h2>
-
-        <div className="relative">
-          <Swiper
-            onSwiper={(s) => {
-              recommendedSwiperRef.current = s;
-              setActiveRecommended(s.realIndex ?? 0);
-            }}
-            onSlideChange={(s) => setActiveRecommended(s.realIndex ?? 0)}
-            slidesPerView={1.15}
-            spaceBetween={16}
-            breakpoints={{
-              640: { slidesPerView: 2.1, spaceBetween: 20 },
-              768: { slidesPerView: 2.6, spaceBetween: 24 },
-              1024: { slidesPerView: 4, spaceBetween: 24 },
-            }}
-            className="py-2"
-          >
-            {recommendedProducts.map((product) => (
-              <SwiperSlide key={`rec-${product.id}`}>
-                <ProductCard product={product} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-
-          <button
-            type="button"
-            aria-label="Previous recommended products"
-            onClick={() => recommendedSwiperRef.current?.slidePrev()}
-            className="absolute -left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-white transition-colors z-10"
-          >
-            <i className="fas fa-chevron-left"></i>
-          </button>
-          <button
-            type="button"
-            aria-label="Next recommended products"
-            onClick={() => recommendedSwiperRef.current?.slideNext()}
-            className="absolute -right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-white transition-colors z-10"
-          >
-            <i className="fas fa-chevron-right"></i>
-          </button>
-        </div>
-
-        <div className="flex justify-center gap-2 mt-6">
-          {recommendedProducts.map((p, idx) => (
-            <button
-              key={`rec-dot-${p.id}-${idx}`}
-              type="button"
-              aria-label={`Go to recommended product ${idx + 1}`}
-              onClick={() => recommendedSwiperRef.current?.slideToLoop(idx)}
-              className={`w-3 h-3 rounded-full ${idx === activeRecommended ? 'bg-primary' : 'bg-border'}`}
-            />
-          ))}
-        </div>
-      </section>
+      <RecommendedCarousel products={recommendedProducts} />
       </main>
   );
 };
